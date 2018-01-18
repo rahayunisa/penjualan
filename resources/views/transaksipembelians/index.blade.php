@@ -13,8 +13,8 @@
 	
               <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#myModal"><i class="glyphicon glyphicon-plus"> Tambah Data </i></button>
 	
-	@role('Administrator')
-	<button type="button" class="btn btn-danger" id="delete-btn"><i class="glyphicon glyphicon-trash"> Delete All </i></a>
+	@role('Administrator'){{-- 
+	<a href="deleteAll5" class="btn btn-danger"><i class="glyphicon glyphicon-trash"> Delete All </i></a> --}}
 	@endrole
             </div>
             <!-- /.box-header -->
@@ -24,12 +24,10 @@
 			<table class="table" id="example">
 				<thead>
 					<tr>
-						<th>No</th>
+						<th>Id Pembelian</th>
 						<th>Nama Supplier</th>
 						<th>Alamat</th>
 						<th>No Telepon</th>
-						<th>Banyak Barang</th>
-						<th>Satuan</th>
 						<th>Tanggal Beli</th>
 						<th>Action</th>
 					</tr>
@@ -42,20 +40,18 @@
 				<td>{{$data->suppliers->nama_supplier}}
 				<div id="collapseOne{{$data->id}}" class="collapse">
 				@php
-				$barangsuppliers = App\BarangSupplier::where('id_transaksipembelian','=',$data->id)->get(); 
+				$barangsuppliers = DB::table('barangsuppliers')->join('stok_barangs','stok_barangs.id','=','barangsuppliers.id_stokbarang')->join('transaksipembelians','transaksipembelians.id','=','barangsuppliers.id_transaksipembelian')->where('barangsuppliers.id_transaksipembelian','=',$data->id)->get(); 
 				@endphp
 				@foreach ($barangsuppliers as $barangsupplier) 
 				<ol>
     				<li> Nama Barang : {{$barangsupplier->nama_barang}} <br> </li>	
     				<li> Harga Beli : {{$barangsupplier->harga_beli}} </li>
+    				<li> Banyak Barang : {{$barangsupplier->jumlah}} </li>
 				</ol>
 				@endforeach
-				</div>
 				</td>
 				<td>{{$data->suppliers->alamat}}</td>
 				<td>{{$data->suppliers->no_telp}}</td>
-				<td>{{$data->banyak_barang}}</td>
-				<td>{{$data->kategoribarangs->satuan}}</td>
 				<td>{{$data->tanggal_beli}}</td>
 		
 				@role('Administrator')
@@ -113,21 +109,7 @@
 							@endforeach
 						</select>
 			</div> 
-				<br>
-
-		    <div class="input-group">
-                <span class="input-group-addon"> Banyak Barang </span> 
-                	<input type="text" value="{{$data->banyak_barang}}" name="b" class="form-control" required="">
-                	<span class="input-group-addon"></span>
-                		<select class="form-control" name="id_kategoribarang">
-						@foreach($kategoribarang as $dd)
-						<option value="{{$dd->id}}">{{$dd->satuan}}
-						</option>
-						@endforeach
-					</select>
-            </div>
-            <br>
-
+			<br>
 
 		    {{-- <div class="input-group">
 				<span class="input-group-addon"> Harga Beli </span>
@@ -189,19 +171,6 @@
 				</div> 
 				<br>
 
-			<div class="input-group">
-                <span class="input-group-addon"> Banyak Barang </span> 
-                	<input type="text" name="b" class="form-control" required="">
-                	<span class="input-group-addon"></span>
-                		<select class="form-control" name="id_kategoribarang">
-						@foreach($kategoribarang as $dd)
-						<option value="{{$dd->id}}">{{$dd->satuan}}
-						</option>
-						@endforeach
-					</select>
-            </div>
-            <br>
-
 			{{-- <div class="input-group">
                 <span class="input-group-addon"> Harga Beli </span>
                 	<input type="text" name="c" class="form-control" required="">
@@ -216,7 +185,6 @@
                 <input type="date" name="d" class="form-control" required="">
             </div>
             <br>
-
 			
 			<div class="modal-footer">
 			    <div class="form-group">

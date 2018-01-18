@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title> Giardino </title>
+  <title>Giardino</title>
   <!-- Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
   <!-- Bootstrap 3.3.7 -->
@@ -71,16 +71,19 @@
           <li class="dropdown user user-menu">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
               <img src="img/profile.png" class="user-image" alt="User Image">
+              @if(Auth::check())
               <span class="hidden-xs">{{ Auth::user()->name}}</span>
+              @endif
             </a>
             <ul class="dropdown-menu">
               <!-- User image -->
               <li class="user-header">
                 <img src="img/profile.png" class="img-circle" alt="User Image">
-
+                @if(Auth::check())
                 <p>
-                  {{ Auth::user()->name}} - Toko Giardino
+                  {{ Auth::user()->name}} -  Toko Giardino
                 </p>
+                @endif
               </li>
               <!-- Menu Body -->
               
@@ -121,7 +124,9 @@
           <img src="img/profile.png" class="img-circle" alt="User Image">
         </div>
         <div class="pull-left info">
+        @if(Auth::check())
           <p>{{ Auth::user()->name}}</p>
+        @endif
           <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
         </div>
       </div>
@@ -148,14 +153,13 @@
             </span>
           </a>
           <ul class="treeview-menu">
-        <li class="divider">           
-        <li class="active"><a href="{{route('kategoribarangs.index')}}"><i class="fa fa-tripadvisor"></i> Kategori Barang </a></li>
+        <li class="divider">          
+        <li class="active"><a href="{{route('stokbarangs.index')}}"><i class="fa fa-star-o"></i> Stok Barang </a></li>
         <li class="active"><a href="{{route('suppliers.index')}}"><i class="fa fa-reddit"></i> Supplier </a></li>
         <li class="active"><a href="{{route('transaksipembelians.index')}}"><i class="fa fa-pied-piper-alt"></i> Transaksi Pembelian </a></li>
-        <li class="active"><a href="{{route('barangsuppliers.index')}}"><i class="fa fa-star-o"></i> Barang Supplier </a></li>
-        <li class="active"><a href="{{route('customers.index')}}"><i class="fa fa-pied-piper"></i> Customer </a></li>
+        <li class="active"><a href="{{route('barangsuppliers.index')}}"><i class="fa fa-star-o"></i> Detail Transaksi Pembelian </a></li>
         <li class="active"><a href="{{route('transaksipenjualans.index')}}"><i class="fa fa-cube"></i> Transaksi Penjualan </a></li> 
-        <li class="active"><a href="{{route('barangcustomers.index')}}"><i class="fa fa-star-o"></i> Barang Customer </a></li>
+        <li class="active"><a href="{{route('barangcustomers.index')}}"><i class="fa fa-cc-jcb"></i> Detail Transaksi Penjualan </a></li>
       
             </li>
           </ul>
@@ -172,11 +176,26 @@
         Toko Sepatu
         <small>Giardino</small>
       </h1>
-      <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-        <li class="active">Dashboard</li>
-      </ol>
+      @if(Auth::check())
+        @if (session()->has('flash_notification.message'))
+            <div class="alert alert-{{ session()->get('flash_notification.level') }}">
+              <button type="button" class="close" data-dismiss="alert" aria-hidden="true"> &times;</button>
+              {!! session()->get('flash_notification.message') !!}
+            </div>
+        @endif
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+      @endif
     </section>
+
+
 
    
  <!-- Control Sidebar -->
@@ -184,7 +203,6 @@
      
   @yield('content')   
 
-  
   
   <div class="control-sidebar-bg"></div>
 

@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\BarangSupplier;
 use App\Supplier;
+use App\StokBarang;
 use App\TransaksiPembelian;
-use App\KategoriBarang;
 use Alert;
+use DB;
 
 class TransaksiPembeliansController extends Controller
 {
@@ -18,10 +20,10 @@ class TransaksiPembeliansController extends Controller
     public function index()
     {
         //
-        $supplier = Supplier::all();
-        $kategoribarang = KategoriBarang::all();
+        $barang = BarangSupplier::all();
+        $supplier= Supplier::all();
         $transaksipembelian = TransaksiPembelian::all();
-        return view ('transaksipembelians.index',compact('transaksipembelian','supplier','kategoribarang'));
+        return view ('transaksipembelians.index',compact('transaksipembelian','supplier','barang'));
 
     }
 
@@ -46,9 +48,6 @@ class TransaksiPembeliansController extends Controller
         //
         $transaksipembelian = new TransaksiPembelian;
         $transaksipembelian->id_supplier = $request->id_supplier;
-        $transaksipembelian->id_kategoribarang = $request->id_kategoribarang;
-        $transaksipembelian->banyak_barang = $request->b;
-        // $transaksipembelian->harga_beli = $request->c;
         $transaksipembelian->tanggal_beli = $request->d;
         Alert::success('Tambah Data','Berhasil')->autoclose(1500);
         $transaksipembelian->save();
@@ -89,9 +88,6 @@ class TransaksiPembeliansController extends Controller
         //
         $transaksipembelian = TransaksiPembelian::findOrFail($id);
         $transaksipembelian->id_supplier = $request->id_supplier;
-        $transaksipembelian->id_kategoribarang = $request->id_kategoribarang;
-        $transaksipembelian->banyak_barang = $request->b;
-        // $transaksipembelian->harga_beli = $request->c;
         $transaksipembelian->tanggal_beli = $request->d;
         Alert::success('Edit Data','Berhasil')->autoclose(1500);
         $transaksipembelian->save();
@@ -112,4 +108,11 @@ class TransaksiPembeliansController extends Controller
         Alert::success('User deleted successfully')->autoclose(1500);
         return redirect('transaksipembelians');
     }
+
+     public function deleteAll()
+    {
+        DB::table('transaksipembelians')->delete();
+        return redirect('transaksipembelians');
+    }
+
 }

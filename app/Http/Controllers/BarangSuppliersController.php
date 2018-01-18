@@ -6,7 +6,9 @@ use Illuminate\Http\Request;
 use App\BarangSupplier;
 use App\Supplier;
 use App\TransaksiPembelian;
+use App\StokBarang;
 use Alert;
+use DB;
 
 class BarangSuppliersController extends Controller
 {
@@ -18,10 +20,11 @@ class BarangSuppliersController extends Controller
     public function index()
     {
         //
+        $stokbarang = StokBarang::all();
         $barang = BarangSupplier::all();
         $supplier= Supplier::all();
         $transaksipembelian = TransaksiPembelian::all();
-        return view ('barangsuppliers.index',compact('barang','transaksipembelian','supplier'));
+        return view ('barangsuppliers.index',compact('barang','transaksipembelian','supplier','stokbarang'));
     }
 
     /**
@@ -43,12 +46,26 @@ class BarangSuppliersController extends Controller
     public function store(Request $request)
     {
         //
+            $request->validate([
+                'jumlah' => 'required|numeric|min:1',
+            ],
+            [
+                'jumlah.required'    => 'Kolom jumlah tidak boleh kosong',
+                'jumlah.min'    => 'Kolom jumlah minimal di isi 1',
+            ]);
+        $bebas = $request->all();
+        $stokbarang=StokBarang::where('id', $bebas['id_stokbarang'])->first();
+
         $barang = new BarangSupplier;
+        $barang->id_stokbarang = $request->id_stokbarang;
         $barang->id_transaksipembelian = $request->id_transaksipembelian;
         $barang->id_supplier = $request->id_supplier;
-        $barang->nama_barang = $request->nama_barang;
-        $barang->harga_beli = $request->harga_beli;
-        $barang->stok = $request->stok;
+        $barang->id_kategoribarang = $request->id_kategoribarang;
+        $barang->jumlah = $request->jumlah;
+        $harga = StokBarang::find($request->id_stokbarang);
+        $harga->stok = $harga->stok + $request->jumlah;
+        $harga->save();
+        $barang->harga_beli = $request->jumlah * $harga->harga;
         $barang->save();
         Alert::success('Tambah Data','Berhasil')->autoclose(1500);
         return redirect('barangsuppliers');
@@ -86,12 +103,19 @@ class BarangSuppliersController extends Controller
     public function update(Request $request, $id)
     {
         //
+        $bebas = $request->all();
+        $stokbarang=StokBarang::where('id', $bebas['id_stokbarang'])->first();
+
         $barang = BarangSupplier::findOrFail($id);
+        $barang->id_stokbarang = $request->id_stokbarang;
         $barang->id_transaksipembelian = $request->id_transaksipembelian;
         $barang->id_supplier = $request->id_supplier;
-        $barang->nama_barang = $request->nama_barang;
-        $barang->harga_beli = $request->harga_beli;
-        $barang->stok = $request->stok;
+        $barang->id_kategoribarang = $request->id_kategoribarang;
+        $harga = StokBarang::find($request->id_stokbarang);
+        $harga->stok = ($harga->stok - $barang->jumlah) + $request->jumlah;
+        $barang->jumlah = $request->jumlah;
+        $harga->save();
+        $barang->harga_beli = $request->jumlah * $harga->harga;
         $barang->save();
         Alert::success('Edit Data','Berhasil')->autoclose(1500);
         return redirect('barangsuppliers');
@@ -111,4 +135,11 @@ class BarangSuppliersController extends Controller
         Alert::success('User deleted successfully')->autoclose(1500);
         return redirect('barangsuppliers');
     }
+
+     public function deleteAll()
+    {
+        DB::table('barangsuppliers')->delete();
+        return redirect('barangsuppliers');
+    }
+
 }

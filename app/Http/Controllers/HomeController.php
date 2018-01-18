@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use KategoriBarang;
+use StokBarang;
 
 class HomeController extends Controller
 {
@@ -24,7 +24,7 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $kategoribarang = KategoriBarang::all();
-        return view('home', compact('kategoribarang'));
+        $stokbarang = StokBarang::all();
+        return view('home', compact('stokbarang'));
     }
 }

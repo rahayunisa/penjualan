@@ -6,7 +6,10 @@ use Illuminate\Http\Request;
 use App\BarangCustomer;
 use App\Customer;
 use App\TransaksiPenjualan;
+use App\StokBarang;
 use Alert;
+use DB;
+use Session;
 
 class BarangCustomersController extends Controller
 {
@@ -18,10 +21,11 @@ class BarangCustomersController extends Controller
     public function index()
     {
         //
+        $stokbarang = StokBarang::all();
         $barangcustomer = BarangCustomer::all();
         $customer= Customer::all();
         $transaksipenjualan = TransaksiPenjualan::all();
-        return view ('barangcustomers.index',compact('barangcustomer','transaksipenjualan','customer'));
+        return view ('barangcustomers.index',compact('barangcustomer','transaksipenjualan','customer','kategoribarang','stokbarang'));
     }
 
     /**
@@ -43,16 +47,37 @@ class BarangCustomersController extends Controller
     public function store(Request $request)
     {
         //
-        $barangscustomer = new BarangCustomer;
-        $barangscustomer->id_customer = $request->id_customer;
-        $barangscustomer->id_transaksipenjualan = $request->id_transaksipenjualan;
-        $barangscustomer->nama_barang = $request->nama_barang;
-        $barangscustomer->harga_jual = $request->harga_jual;
-        $barangscustomer->harga_beli = $request->harga_beli;
-        $barangscustomer->stok = $request->stok;
-        $barangscustomer->save();
-        Alert::success('Tambah Data','Berhasil')->autoclose(1500);
-        return redirect('barangcustomers');
+        $b = StokBarang::findOrFail($request->id_stokbarang);
+        if($request->jumlah > $b->stok){
+            Session::flash("flash_notification", [
+                "level" => "danger",
+                "message" => "Jumlah order barang ($request->jumlah) melebihi jumlah stok barang ($b->stok)"]);
+            return redirect('/barangcustomers');
+        }else{
+            $request->validate([
+                'id_stokbarang' => 'required',
+                'id_transaksipenjualan'  => 'required',
+                'jumlah' => 'required|numeric|min:1',
+            ],
+            [
+                'jumlah.required'    => 'Kolom jumlah tidak boleh kosong',
+                'jumlah.min'    => 'Kolom jumlah minimal di isi 1',
+            ]);
+            $barangcustomer = new BarangCustomer;
+            $barangcustomer->id_transaksipenjualan = $request->id_transaksipenjualan;
+            $barangcustomer->id_stokbarang = $request->id_stokbarang;
+            $barangcustomer->id_kategoribarang = $request->id_kategoribarang;
+            $barangcustomer->jumlah = $request->jumlah;
+            $harga = StokBarang::find($request->id_stokbarang);
+            $harga->stok = $harga->stok - $request->jumlah;
+            $harga->save();
+            $barangcustomer->harga_beli = $request->jumlah * $harga->harga;
+            $barangcustomer->save();
+            Alert::success('Tambah Data','Berhasil')->autoclose(1500);
+            return redirect('/barangcustomers');
+        }
+
+
     }
 
     /**
@@ -86,16 +111,15 @@ class BarangCustomersController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
         $barangcustomer = BarangCustomer::findOrFail($id);
-        $barangscustomer->id_customer = $request->id_customer;
-        $barangscustomer->id_transaksipenjualan = $request->id_transaksipenjualan;
-
-        $barangscustomer->nama_barang = $request->nama_barang;
-        $barangscustomer->harga_jual = $request->harga_jual;
-        $barangscustomer->harga_beli = $request->harga_beli;
-        $barangscustomer->stok = $request->stok;
-        $barangscustomer->save();
+        $barangcustomer->id_transaksipenjualan = $request->id_transaksipenjualan;
+        $barangcustomer->id_kategoribarang = $request->id_kategoribarang;
+        $harga = StokBarang::find($request->id_stokbarang);
+        $harga->stok = ($harga->stok + $barangcustomer->jumlah) - $request->jumlah;
+        $barangcustomer->jumlah = $request->jumlah;
+        $harga->save();
+        $barangcustomer->harga_beli = $request->jumlah * $harga->harga;
+        $barangcustomer->save();
         Alert::success('Tambah Data','Berhasil')->autoclose(1500);
         return redirect('barangcustomers');
     }
@@ -114,4 +138,16 @@ class BarangCustomersController extends Controller
         Alert::success('User deleted successfully')->autoclose(1500);
         return redirect('barangcustomers');
     }
+
+     public function deleteAll()
+    {
+        DB::table('barangcustomers')->delete();
+        return redirect('barangcustomers');
+    }
+
+    public function error()
+    {
+        return view('errors.404');
+    }
+
 }

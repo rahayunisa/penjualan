@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Customer;
 use Alert;
+use DB;
 
 class CustomersController extends Controller
 {
@@ -104,4 +105,11 @@ class CustomersController extends Controller
         Alert::success('User deleted successfully')->autoclose(1500);
         return redirect('customers');
     }
+
+     public function deleteAll()
+    {
+        DB::table('customers')->delete();
+        return redirect('customers');
+    }
+
 }

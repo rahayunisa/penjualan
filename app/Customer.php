@@ -14,11 +14,11 @@ class Customer extends Model
 
     public function transaksipenjualans () 
     {
-    	return $this->hasMany('App\TransaksiPenjualan' , 'id_customer');
+        return $this->hasMany('App\TransaksiPenjualan' , 'id_customer');
     }
 
     public function barangcustomers () 
     {
-    	return $this->hasMany('App\BarangCustomers' , 'id_customer');
+        return $this->hasMany('App\BarangCustomers' , 'id_customer');
     }
 }

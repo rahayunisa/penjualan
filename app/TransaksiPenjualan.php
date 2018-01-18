@@ -14,12 +14,19 @@ class TransaksiPenjualan extends Model
     
     public function customers () 
     {
-    	return $this->belongsTo('App\Customer', 'id_customer');
+        return $this->belongsTo('App\Customer', 'id_customer');
 
     }
 
     public function kategoribarangs () 
     {
-    	return $this->belongsTo('App\KategoriBarang' , 'id_kategoribarang');
+        return $this->belongsTo('App\KategoriBarang' , 'id_kategoribarang');
     }
+
+    public function barangcustomers () 
+    {
+        return $this->belongsTo('App\BarangCustomer', 'id_transaksipenjualan');
+
+    }
+
 }

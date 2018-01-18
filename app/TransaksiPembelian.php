@@ -14,12 +14,17 @@ class TransaksiPembelian extends Model
 
     public function suppliers () 
     {
-    	return $this->belongsTo('App\Supplier', 'id_supplier');
+        return $this->belongsTo('App\Supplier', 'id_supplier');
 
     }
 
     public function kategoribarangs () 
     {
-    	return $this->belongsTo('App\KategoriBarang' , 'id_kategoribarang');
+        return $this->belongsTo('App\KategoriBarang' , 'id_kategoribarang');
+    }
+
+    public function stokbarangs () 
+    {
+        return $this->belongsTo('App\StokBarang' , 'id_stokbarang');
     }
 }

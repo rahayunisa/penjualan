@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\BarangCustomer;
 use App\Customer;
 use App\TransaksiPenjualan;
-use App\KategoriBarang;
 use Alert;
+use DB;
 
 class TransaksiPenjualansController extends Controller
 {
@@ -18,10 +19,10 @@ class TransaksiPenjualansController extends Controller
     public function index()
     {
         //
-        $customer = Customer::all();
-        $kategoribarang = KategoriBarang::all();
+        $barangcustomer = BarangCustomer::all();
+        $customer= Customer::all();
         $transaksipenjualan = TransaksiPenjualan::all();
-        return view ('transaksipenjualans.index',compact('transaksipenjualan','customer','kategoribarang'));
+        return view ('transaksipenjualans.index',compact('transaksipenjualan','customer','barangcustomer'));
     }
 
     /**
@@ -43,11 +44,10 @@ class TransaksiPenjualansController extends Controller
     public function store(Request $request)
     {
         //
-        $transaksipenjualan = new Transaksipenjualan;
-        $transaksipenjualan->id_customer = $request->id_customer;
-        $transaksipenjualan->id_kategoribarang = $request->id_kategoribarang;
-        $transaksipenjualan->banyak_barang = $request->b;
-        $transaksipenjualan->tanggal_terjual = $request->d;
+        $transaksipenjualan = new TransaksiPenjualan;
+        $transaksipenjualan->tanggal_beli = $request->d;
+        $transaksipenjualan->nama_customer = $request->nama_customer;
+        $transaksipenjualan->alamat = $request->alamat;
         Alert::success('Tambah Data','Berhasil')->autoclose(1500);
         $transaksipenjualan->save();
         return redirect('transaksipenjualans');
@@ -86,10 +86,9 @@ class TransaksiPenjualansController extends Controller
     {
         //
         $transaksipenjualan = TransaksiPenjualan::findOrFail($id);
-        $transaksipenjualan->id_customer = $request->id_customer;
-        $transaksipenjualan->id_kategoribarang = $request->id_kategoribarang;
-        $transaksipenjualan->banyak_barang = $request->b;
-        $transaksipenjualan->tanggal_terjual = $request->d;
+        $transaksipenjualan->tanggal_beli = $request->d;
+        $transaksipenjualan->nama_customer = $request->nama_customer;
+        $transaksipenjualan->alamat = $request->alamat;
         Alert::success('Tambah Data','Berhasil')->autoclose(1500);
         $transaksipenjualan->save();
         return redirect('transaksipenjualans');
@@ -110,4 +109,11 @@ class TransaksiPenjualansController extends Controller
         Alert::success('User deleted successfully')->autoclose(1500);
         return redirect('transaksipenjualans');
     }
+
+     public function deleteAll()
+    {
+        DB::table('transaksipenjualans')->delete();
+        return redirect('transaksipenjualans');
+    }
+
 }

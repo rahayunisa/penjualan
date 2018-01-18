@@ -1,21 +1,22 @@
 @extends('layouts.admin')
 @section('content')
 
-	<center><h1> DATA BARANG CUSTOMER </h1></center>
+	<center><h1> DATA DETAIL TRANSAKSI PENJUALAN </h1></center>
 
 	<section class="content">
       <div class="row">
         <div class="col-xs-12">
           <div class="box">
             <div class="box-header">
-              <h3 class="box-title">DATA BARANG CUSTOMER</h3>
+            <span class="alert-danger"></span>
+              <h3 class="box-title">DATA DETAIL TRANSAKSI PENJUALAN</h3>
 
 	<div class="panel-title pull-right">
 	
               <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#myModal"><i class="glyphicon glyphicon-plus"> Tambah Data </i></button>
 
-	@role('Administrator')
-	<button type="button" class="btn btn-danger" id="delete-btn"><i class="glyphicon glyphicon-trash"> Delete All </i></a>
+	@role('Administrator'){{-- 
+	<a href="deleteAll3" class="btn btn-danger"><i class="glyphicon glyphicon-trash"> Delete All </i></a> --}}
 	@endrole
             </div>
             <!-- /.box-header -->
@@ -26,12 +27,12 @@
 				<thead>
 					<tr>
 						<th>No</th>
-						<th>Id Customer</th>
-						<th>Id Transaksi Penjualan</th>
+						<th>Nama Customer</th>
+						<th>Satuan</th>
 						<th>Nama Barang</th>
-						<th>Harga Jual</th>
+						<th>Jumlah Barang</th>
 						<th>Harga Beli</th>
-						<th>Stok</th>
+						<th>Tanggal</th>
 						<th>Action</th>
 					</tr>
 				</thead>
@@ -40,12 +41,12 @@
 				@foreach($barangcustomer as $data)
 				<tr>
 				<td>{{$no++}}</td>
-				<td>{{$data->customers->id}}</td>
-				<td>{{$data->transaksipenjualans->id}}</td>
-				<td>{{$data->nama_barang}}</td>
-				<td>{{$data->harga_jual}}</td>
+				<td>{{$data->transaksipenjualans->nama_customer}}</td>
+				<td>{{$data->stokbarangs->satuan}}</td>
+				<td>{{$data->stokbarangs->nama_barang}}</td>
+				<td>{{$data->jumlah}}</td>
 				<td>{{$data->harga_beli}}</td>
-				<td>{{$data->stok}}</td>
+				<td>{{$data->transaksipenjualans->tanggal_beli}}
 				
 				@role('Administrator')
 				<td>
@@ -88,22 +89,13 @@
 			      
 			<div class="box-body">
 
-			<div class="input-group">
-				<span class="input-group-addon"> Id Transaksi Penjualan </span>
-					<select class="form-control" name="id_transaksipenjualan">
-						@foreach($transaksipenjualan as $dd)
-						<option value="{{$dd->id}}">{{$dd->id}}
-						</option>
-						@endforeach
-					</select>
-			</div>
-			<br>
+			<div class="box-body">
 
 			<div class="input-group">
-				<span class="input-group-addon"> Id Customer </span>
-					<select class="form-control" name="id_customer">
-						@foreach($customer as $dd)
-						<option value="{{$dd->id}}">{{$dd->id}}
+				<span class="input-group-addon"> Nama Customer </span>
+					<select class="form-control" name="id_transaksipenjualan">
+						@foreach($transaksipenjualan as $dd)
+						<option value="{{$dd->id}}">{{$dd->nama_customer}}
 						</option>
 						@endforeach
 					</select>
@@ -112,30 +104,28 @@
 
 			<div class="input-group">
 				<span class="input-group-addon"> Nama Barang </span>
-				<input type="text" value="{{$data->nama_barang}}" name="nama_barang" class="form-control" required="">
+					<select class="form-control" name="id_stokbarang">
+						@foreach($stokbarang as $dd)
+						<option value="{{$dd->id}}">{{$dd->nama_barang}}
+						</option>
+						@endforeach
+					</select>
 			</div>
 			<br>
 
 			<div class="input-group">
-				<span class="input-group-addon"> Harga Jual </span>
-				<input type="text" value="{{$data->harga_jual}}" name="harga_jual" class="form-control" required="">
-				<span class="input-group-addon">.00</span>
-			</div>
-			<br>
+                <span class="input-group-addon"> Jumlah Barang </span>
+                	<input type="text" value="{{$data->jumlah}}" name="jumlah" class="form-control">
+                	<span class="input-group-addon"></span>
+                		<select class="form-control" name="id_kategoribarang">
+						@foreach($stokbarang as $dd)
+						<option value="{{$dd->id}}">{{$dd->satuan}}
+						</option>
+						@endforeach
+					</select>
+            </div>
+            <br>
 
-			<div class="input-group">
-				<span class="input-group-addon"> Harga Beli </span>
-				<input type="text" value="{{$data->harga_beli}}" name="harga_beli" class="form-control" required="">
-				<span class="input-group-addon">.00</span>
-			</div>
-			<br>
-
-			<div class="input-group">
-				<span class="input-group-addon"> Stok </span>
-				<input type="text" value="{{$data->stok}}" name="stok" class="form-control" required="">
-			</div>
-			<br>
-			      
 			</div>
 			      <div class="modal-footer">
 			        <div class="form-group">
@@ -173,21 +163,10 @@
 			<div class="box-body">
 
 			<div class="input-group">
-				<span class="input-group-addon"> Id Transaksi Penjualan </span>
+				<span class="input-group-addon"> Nama Customer </span>
 					<select class="form-control" name="id_transaksipenjualan">
 						@foreach($transaksipenjualan as $dd)
-						<option value="{{$dd->id}}">{{$dd->id}}
-						</option>
-						@endforeach
-					</select>
-			</div>
-			<br>
-
-			<div class="input-group">
-				<span class="input-group-addon"> Id Customer </span>
-					<select class="form-control" name="id_customer">
-						@foreach($customer as $dd)
-						<option value="{{$dd->id}}">{{$dd->id}}
+						<option value="{{$dd->id}}">{{$dd->nama_customer}}
 						</option>
 						@endforeach
 					</select>
@@ -196,29 +175,27 @@
 
 			<div class="input-group">
 				<span class="input-group-addon"> Nama Barang </span>
-				<input type="text" name="nama_barang" class="form-control" required="">
-			</div>
-			<br>
-			
-			<div class="input-group">
-				<span class="input-group-addon"> Harga Jual </span>
-				<input type="text" name="harga_jual" class="form-control" required="">
-				<span class="input-group-addon">.00</span>
-			</div>
-			<br>
-
-			<div class="input-group">
-				<span class="input-group-addon"> Harga Beli </span>
-				<input type="text" name="harga_beli" class="form-control" required="">
-				<span class="input-group-addon">.00</span>
+					<select class="form-control" name="id_stokbarang">
+						@foreach($stokbarang as $dd)
+						<option value="{{$dd->id}}">{{$dd->nama_barang}}
+						</option>
+						@endforeach
+					</select>
 			</div>
 			<br>
 
 			<div class="input-group">
-				<span class="input-group-addon"> Stok </span>
-				<input type="text" name="stok" class="form-control" required="">
-			</div>
-			<br>
+                <span class="input-group-addon"> Jumlah Barang </span> 
+                	<input type="text" name="jumlah" class="form-control">
+                	<span class="input-group-addon"></span>
+                		<select class="form-control" name="id_kategoribarang">
+						@foreach($stokbarang as $dd)
+						<option value="{{$dd->id}}">{{$dd->satuan}}
+						</option>
+						@endforeach
+					</select>
+            </div>
+            <br>
 
 			</div>
 

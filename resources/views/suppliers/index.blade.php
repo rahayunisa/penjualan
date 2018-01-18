@@ -13,8 +13,8 @@
 	
               <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#myModal"><i class="glyphicon glyphicon-plus"> Tambah Data </i></button>
 	
-	@role('Administrator')
-	<button type="button" class="btn btn-danger" id="delete-btn"><i class="glyphicon glyphicon-trash"> Delete All </i></a>
+	@role('Administrator'){{-- 
+	<a href="deleteAll4" class="btn btn-danger"><i class="glyphicon glyphicon-trash"> Delete All </i></a> --}}
 	@endrole
             </div>
             <!-- /.box-header -->
